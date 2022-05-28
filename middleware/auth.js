@@ -1,4 +1,4 @@
-const jwtPublicKey = require("./publickeys");
+const jwtPublicKey = require("./public-keys");
 const jwt = require("jsonwebtoken");
 const jwkToPem = require("jwk-to-pem");
 

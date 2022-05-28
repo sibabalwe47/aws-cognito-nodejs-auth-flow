@@ -60,7 +60,42 @@ exports.signIn = async (req, res) => {
 exports.confirmEmail = async (req, res) => {
   try {
     //console.log(verifyToken("LKLK"));
+    // Get email and password from request
+    const { email, confirmationCode } = req.body;
+
+    // Sign up user
+    const result = await COGNITO_IDENTITY_CLIENT.confirmSignUpCommand(
+      email,
+      confirmationCode
+    );
+
+    console.log("Result");
+    // Return result to client
+    return res.status(result["$metadata"].httpStatusCode).json({
+      success: true,
+      message: "Email verified successfully!",
+    });
   } catch (error) {
-    statusCode(500, error);
+    return res.json(statusCode(500, error));
+  }
+};
+
+exports.resendConfirmationCode = async (req, res) => {
+  try {
+    // Get email from request body
+    const { email } = req.body;
+
+    // Request confirmation code
+    const result = await COGNITO_IDENTITY_CLIENT.resendConfirmationCodeCommand(
+      email
+    );
+
+    console.log("Result:", result);
+    return res.status(result.$metadata.httpStatusCode).json({
+      success: true,
+      message: "Confirmation code sent to: " + email,
+    });
+  } catch (error) {
+    return res.json(statusCode(500, error));
   }
 };

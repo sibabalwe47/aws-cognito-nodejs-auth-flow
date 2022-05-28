@@ -24,4 +24,11 @@ router.post("/login", authController.signIn);
  */
 router.post("/confirm", authController.confirmEmail);
 
+/*
+    Endpoint:       /auth/resend-confirmation
+    Method:         GET  
+    Description:    Allows users to login 
+ */
+router.get("/resend-confirmation", authController.resendConfirmationCode);
+
 module.exports = router;
