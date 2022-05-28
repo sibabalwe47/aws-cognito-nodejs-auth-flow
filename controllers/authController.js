@@ -30,13 +30,27 @@ exports.signIn = async (req, res) => {
     // Sign up user
     const result = await COGNITO_IDENTITY_CLIENT.signInCommand(email, password);
 
-    verifyToken(result.AuthenticationResult.IdToken);
-    // Return result to client
-    return res.status(result["$metadata"].httpStatusCode).json({
-      success: true,
-      token: result.AuthenticationResult.AccessToken,
-      refreshToken: result.AuthenticationResult.RefreshToken,
-    });
+    // Stores verified user data
+    const userFromCognito = verifyToken(result.AuthenticationResult.IdToken);
+
+    // Check if the user is not empty
+    if (Object.keys(userFromCognito).length == 0) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid token",
+      });
+    } else {
+      const response = {
+        success: true,
+        verified: userFromCognito.email_verified,
+        userId: userFromCognito.sub,
+        email: userFromCognito.email,
+        token: result.AuthenticationResult.AccessToken,
+        refreshToken: result.AuthenticationResult.RefreshToken,
+      };
+      // Return result to client
+      return res.status(result["$metadata"].httpStatusCode).json(response);
+    }
   } catch (error) {
     return res.json(statusCode(500, error));
   }
